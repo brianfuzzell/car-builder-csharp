@@ -19,7 +19,7 @@ List<Interior> interiors = new List<Interior>
     {
         Id = 3,
         Price = 51.25M,
-        Material = "White Leather
+        Material = "White Leather"
     },
      new Interior()
     {
@@ -132,9 +132,120 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
 
+app.MapGet("/interiors", () =>
+{
+   return interiors.Select(interior => new InteriorDTO
+   {
+       Id = interior.Id,
+       Price = interior.Price,
+       Material = interior.Material
+   });
+});
 
+app.MapGet("/interiors/{id}", (int id) =>
+{
+    Interior interior = interiors.FirstOrDefault(interior => interior.Id == id);
+    if (interior == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new InteriorDTO
+    {
+        Id = interior.Id,
+        Price = interior.Price,
+        Material = interior.Material
+    });
+});
 
+/* app.MapGet("/orders", () =>
+{
+    return orders.Select(o => new OrderDTO
+    {
+        Id = o.Id,
+        TimeStamp = o.TimeStamp,
+        WheelId = o.WheelId,
+        TechnologyId = o.TechnologyId,
+        PaintId = o.PaintId,
+        InteriorId = o.InteriorId
+    });
+}); */
+
+app.MapGet("/paintcolors", () =>
+{
+    return paintColors.Select(p => new PaintColorDTO
+    {
+        Id = p.Id,
+        Price = p.Price,
+        Color = p.Color
+    });
+});
+
+app.MapGet("/paintcolors/{id}", (int id) =>
+{
+    PaintColor paintColor = paintColors.FirstOrDefault(paintColor => paintColor.Id == id);
+    if (paintColor == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new PaintColorDTO
+    {
+        Id = paintColor.Id,
+        Price = paintColor.Price,
+        Color = paintColor.Color
+    });
+});
+
+app.MapGet("/technologies", () =>
+{
+    return technologies.Select(t => new TechnologyDTO
+    {
+        Id = t.Id,
+        Price = t.Price,
+        Package = t.Package
+    });
+});
+
+app.MapGet("/technologies/{id}", (int id) =>
+{
+    Technology technology = technologies.FirstOrDefault(technology => technology.Id == id);
+    if (technology == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new TechnologyDTO
+    {
+        Id = technology.Id,
+        Price = technology.Price,
+        Package = technology.Package
+    });
+});
+
+app.MapGet("/wheels", () =>
+{
+    return wheels.Select(w => new WheelsDTO
+    {
+        Id = w.Id,
+        Price = w.Price,
+        Style = w.Style
+    });
+});
+
+app.MapGet("/wheels/{id}", (int id) =>
+{
+    Wheels wheels1 = wheels.FirstOrDefault(wheels1 => wheels1.Id == id);
+    if (wheels1 == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new WheelsDTO
+    {
+        Id = wheels1.Id,
+        Price = wheels1.Price,
+        Style = wheels1.Style
+    });
+});
 
 app.Run();
 
