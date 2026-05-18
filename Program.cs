@@ -346,7 +346,7 @@ app.MapGet("/paintcolors/{id}", (int id) =>
     });
 });
 
-app.MapGet("/technology", () =>
+app.MapGet("/technologies", () =>
 {
     return technologies.Select(t => new TechnologyDTO
     {
@@ -356,7 +356,7 @@ app.MapGet("/technology", () =>
     });
 });
 
-app.MapGet("/technology/{id}", (int id) =>
+app.MapGet("/technologies/{id}", (int id) =>
 {
     Technology technology = technologies.FirstOrDefault(technology => technology.Id == id);
     if (technology == null)
