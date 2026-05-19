@@ -17,4 +17,5 @@ public class OrderDTO
    (this.Technology.Price) +
    (this.PaintColor.Price) +
    (this.Interior.Price);
+   public bool Fulfilled { get; set; }
 }

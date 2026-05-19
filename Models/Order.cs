@@ -12,4 +12,5 @@ public class Order
    public Technology Technology { get; set; }
    public PaintColor PaintColor { get; set; }
    public Interior Interior { get; set; }
+   public bool Fulfilled { get; set; }
 }
