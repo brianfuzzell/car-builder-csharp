@@ -192,8 +192,8 @@ app.MapGet("/orders", (int? paintId) =>
         Wheels = new WheelsDTO
         {
             Id = o.Wheels.Id,
-            Price = wheel.Price, // Stopped here
-            Style = wheel.Style
+            Price = o.Wheels.Price,
+            Style = o.Wheels.Style
         },
         TechnologyId = o.TechnologyId,
         Technology = new TechnologyDTO
@@ -205,16 +205,16 @@ app.MapGet("/orders", (int? paintId) =>
         PaintId = o.PaintId,
         PaintColor = new PaintColorDTO
         {
-            Id = paintColor.Id,
-            Price = paintColor.Price,
-            Color = paintColor.Color
+            Id = o.PaintColor.Id,
+            Price = o.PaintColor.Price,
+            Color = o.PaintColor.Color
         },
         InteriorId = o.InteriorId,
         Interior = new InteriorDTO
         {
-            Id = interior.Id,
-            Price = interior.Price,
-            Material = interior.Material
+            Id = o.Interior.Id,
+            Price = o.Interior.Price,
+            Material = o.Interior.Material
         }
     }).ToList();
 });
