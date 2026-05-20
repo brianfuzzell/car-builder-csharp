@@ -12,4 +12,10 @@ public class OrderDTO
    public TechnologyDTO Technology { get; set; }
    public PaintColorDTO PaintColor { get; set; }
    public InteriorDTO Interior { get; set; }
+   public decimal TotalCost =>
+   (this.Wheels.Price) +
+   (this.Technology.Price) +
+   (this.PaintColor.Price) +
+   (this.Interior.Price);
+   public bool Fulfilled { get; set; }
 }

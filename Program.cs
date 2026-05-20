@@ -166,48 +166,56 @@ app.MapGet("/interiors/{id}", (int id) =>
     });
 });
 
-app.MapGet("/orders", () =>
+app.MapGet("/orders", (int? paintId) =>
 {
-    return orders.Select(o =>
+    foreach (Order order in orders)
     {
-        Wheels wheel = wheels.FirstOrDefault(w => w.Id == o.WheelsId);
-        Technology technology = technologies.FirstOrDefault(t => t.Id == o.TechnologyId);
-        PaintColor paintColor = paintColors.FirstOrDefault(pc => pc.Id == o.PaintId);
-        Interior interior = interiors.FirstOrDefault(i => i.Id == o.InteriorId);
+        order.Wheels = wheels.First(w => w.Id == order.WheelsId);
+        order.Technology = technologies.First(t => t.Id == order.TechnologyId);
+        order.PaintColor = paintColors.First(pc => pc.Id == order.PaintId);
+        order.Interior = interiors.First(i => i.Id == order.InteriorId);
+    }
 
-        return new OrderDTO
+    List<Order> filteredOrders = orders.Where(o => !o.Fulfilled).ToList();
+
+    // Now check for the paintId property to see if we should filter by that as well
+    if (paintId != null)
+    {
+        filteredOrders = filteredOrders.Where(order => order.PaintId == paintId).ToList();
+    }
+
+    return filteredOrders.Select(o => new OrderDTO
+    {
+        Id = o.Id,
+        TimeStamp = o.TimeStamp,
+        WheelsId = o.WheelsId,
+        Wheels = new WheelsDTO
         {
-            Id = o.Id,
-            TimeStamp = o.TimeStamp,
-            WheelsId = o.WheelsId,
-            Wheels = new WheelsDTO
-            {
-                Id = wheel.Id,
-                Price = wheel.Price,
-                Style = wheel.Style
-            },
-            TechnologyId = o.TechnologyId,
-            Technology = new TechnologyDTO
-            {
-                Id = technology.Id,
-                Price = technology.Price,
-                Package = technology.Package
-            },
-            PaintId = o.PaintId,
-            PaintColor = new PaintColorDTO
-            {
-                Id = paintColor.Id,
-                Price = paintColor.Price,
-                Color = paintColor.Color
-            },
-            InteriorId = o.InteriorId,
-            Interior = new InteriorDTO
-            {
-                Id = interior.Id,
-                Price = interior.Price,
-                Material = interior.Material
-            }
-        };
+            Id = o.Wheels.Id,
+            Price = o.Wheels.Price,
+            Style = o.Wheels.Style
+        },
+        TechnologyId = o.TechnologyId,
+        Technology = new TechnologyDTO
+        {
+            Id = o.Technology.Id,
+            Price = o.Technology.Price,
+            Package = o.Technology.Package
+        },
+        PaintId = o.PaintId,
+        PaintColor = new PaintColorDTO
+        {
+            Id = o.PaintColor.Id,
+            Price = o.PaintColor.Price,
+            Color = o.PaintColor.Color
+        },
+        InteriorId = o.InteriorId,
+        Interior = new InteriorDTO
+        {
+            Id = o.Interior.Id,
+            Price = o.Interior.Price,
+            Material = o.Interior.Material
+        }
     }).ToList();
 });
 
@@ -269,18 +277,33 @@ app.MapPost("/orders", (Order order) =>
     });
 });
 
-app.MapPost("/orders/{id}/complete", (int id) =>
+app.MapPost("/orders/{id}/fulfill", (int id) =>
 {
-    Order orderToComplete = orders.FirstOrDefault(o => o.Id == id);
+    Order orderToFulfill = orders?.FirstOrDefault(o => o.Id == id);
 
-    orderToComplete.TimeStamp = DateTime.Now;
+    // orderToFulfill.TimeStamp = DateTime.Now;
+    if (orderToFulfill == null)
+    {
+        return Results.NotFound();
+    }
+
+    orderToFulfill.Fulfilled = true;
+
+    return Results.Created();
+
 });
 
-/* app.MapGet("/orders/{id}", (int id) =>
+app.MapGet("/orders/{id}", (int id) =>
 {
-    Wheels wheel = wheels.FirstOrDefault(w => w.Id == order.WheelId);
+    Order order = orders.FirstOrDefault(o => o.Id == id);
+    if (order == null)
+    {
+        return Results.NotFound();
+    }
 
-    Technology technology = technology.FirstOrDefault(t => t.Id == order.TechnologyId);
+    Wheels wheel = wheels.FirstOrDefault(w => w.Id == order.WheelsId);
+
+    Technology technology = technologies.FirstOrDefault(t => t.Id == order.TechnologyId);
 
     PaintColor paintColor = paintColors.FirstOrDefault(pc => pc.Id == order.PaintId);
 
@@ -290,8 +313,8 @@ app.MapPost("/orders/{id}/complete", (int id) =>
     {
         Id = order.Id,
         TimeStamp = order.TimeStamp,
-        WheelId = order.WheelId,
-        Wheel = wheel == null ? null : new WheelsDTO
+        WheelsId = order.WheelsId,
+        Wheels = wheel == null ? null : new WheelsDTO
         {
             Id = wheel.Id,
             Price = wheel.Price,
@@ -317,9 +340,10 @@ app.MapPost("/orders/{id}/complete", (int id) =>
             Id = interior.Id,
             Price = interior.Price,
             Material = interior.Material
-        } 
+        },
+        Fulfilled = order.Fulfilled
     });
-}); */
+});
 
 app.MapGet("/paintcolors", () =>
 {
